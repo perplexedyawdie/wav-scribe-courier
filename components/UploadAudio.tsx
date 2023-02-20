@@ -18,11 +18,7 @@ function UploadAudio() {
                 console.log(selectedFile)
                 let formData = new FormData();
                 formData.append("file", selectedFile);
-                const resp = await axios.post('/api/upload-audio', formData, {
-                    headers: {
-                        "Content-Type": "multipart/form-data",
-                      },
-                });
+                const resp = await axios.post('/api/upload-audio', formData);
                 console.log(resp.statusText)
                 setSelectedFile(null)
             }
