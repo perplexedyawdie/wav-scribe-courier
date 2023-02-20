@@ -28,7 +28,7 @@ export default async function handler(
             
          });
          const queue = 'tasks'
-         const conn = await ampq.connect("amqp://localhost:5672")
+         const conn = await ampq.connect(process.env.RABBIT_CONNECTION_STRING!)
          const ch1 = await conn.createChannel();
          await ch1.assertQueue(queue);
         let fileId = uuidv4();
