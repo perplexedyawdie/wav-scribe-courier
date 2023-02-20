@@ -69,7 +69,7 @@ export default async function handler(
             
         const queryResult = await db.query('CALL init_file(?, ?)', [fileId, (new Date).toISOString()])
         console.log(queryResult)
-        res.status(200).send({ message: 'ok' })
+        res.status(200).send({ message: fileId })
     } catch (err) {
         console.error(err)
         res.status(400).send({ message: 'Bad Request' })
