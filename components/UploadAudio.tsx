@@ -1,7 +1,5 @@
-import { FileUpload } from '@/types/wavscriber.interface';
 import axios from 'axios';
 import React, { useState } from 'react'
-import { v4 as uuidv4 } from 'uuid';
 import { AiOutlineInfoCircle } from 'react-icons/ai'
 
 function UploadAudio() {
@@ -16,7 +14,8 @@ function UploadAudio() {
 
     const handleTranscribeBtnClick: React.MouseEventHandler<HTMLButtonElement> = async (event) => {
         try {
-            if (selectedFile) {
+            if (selectedFile && selectedFile.type) {
+                console.log(selectedFile)
                 let formData = new FormData();
                 formData.append("file", selectedFile);
                 const resp = await axios.post('/api/upload-audio', formData, {
@@ -25,6 +24,7 @@ function UploadAudio() {
                       },
                 });
                 console.log(resp.statusText)
+                setSelectedFile(null)
             }
         } catch (error) {
             console.error(error)

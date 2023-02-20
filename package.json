@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.272.0",
+    "@aws-sdk/s3-request-presigner": "^3.272.0",
     "@next-auth/mongodb-adapter": "^1.1.1",
     "@next/font": "13.1.6",
     "@types/node": "18.11.19",
