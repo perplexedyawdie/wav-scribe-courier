@@ -11,7 +11,7 @@ function NavBar() {
                 <a className="btn btn-ghost normal-case text-primary text-xl  hidden md:flex">WavScriber</a>
             </div>
             <div className="navbar-end">
-            <li><Link href="/status">Home</Link></li>
+            <li><Link href="/status">Status</Link></li>
                 <div className="dropdown dropdown-end">
                     <label tabIndex={0} className="btn btn-ghost btn-circle avatar">
                         <div className="w-10 rounded-full">
