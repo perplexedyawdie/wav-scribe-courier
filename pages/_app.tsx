@@ -12,7 +12,7 @@ export default function App({
     <SessionProvider session={session}>
       <Head>
         <title>Wav Scribe</title>
-        <meta name="description" content="Audio to text made easy with ai" />
+        <meta name="description" content="Audio transcription made easy with ai" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>

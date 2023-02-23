@@ -37,3 +37,5 @@ next-env.d.ts
 
 /config/*.crt
 .env.production
+.oci
+.oci*

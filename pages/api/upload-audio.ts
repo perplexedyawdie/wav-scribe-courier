@@ -1,11 +1,12 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import formidable, { File } from 'formidable'
-import { S3Client, PutObjectCommand, GetObjectCommand  } from '@aws-sdk/client-s3'
+import { S3Client, PutObjectCommand, GetObjectCommand } from '@aws-sdk/client-s3'
 import fs from 'fs'
 import { v4 as uuidv4 } from 'uuid';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner'
 import ampq from 'amqplib'
-import { dbConnection } from '@/config/db';
+import dbObj from '@/libs/mongo';
+import { Collection } from 'mongodb';
 
 const form = formidable({ multiples: false })
 
@@ -21,11 +22,12 @@ export default async function handler(
     }
 
     try {
-        const db = dbConnection();
+        const { dbProm } = dbObj;
+      
         const s3Client = new S3Client({ 
             region: process.env.LINODE_REGION,
             endpoint: process.env.LINODE_ENDPOINT,
-            
+
          });
          const queue = 'tasks'
          const conn = await ampq.connect(process.env.RABBIT_CONNECTION_STRING!)
@@ -34,15 +36,18 @@ export default async function handler(
         let fileId = uuidv4();
         const fileContent: {
             buff: Buffer,
-            data: formidable.FileJSON
+            data: formidable.FileJSON,
+            userEmail: string
         } = await (new Promise((resolve, reject) => {
             form.parse(req, (err, _fields, files) => {
                 if (isFile(files.file)) {
                     const fileContentBuffer = fs.readFileSync(files.file.filepath)
-                    console.log(files.file.toJSON())
+                    // console.log(_fields)
+                    // console.log(files.file.toJSON())
                     resolve({
                         buff: fileContentBuffer,
-                        data: files.file.toJSON()
+                        data: files.file.toJSON(),
+                        userEmail: _fields.userEmail as string
                     })
                 }
                 reject(err)
@@ -54,7 +59,7 @@ export default async function handler(
             Body: fileContent.buff,
             ContentType: fileContent.data.mimetype!
         }))
-        console.log(resp)
+     
         const command = new GetObjectCommand({
             Key: fileId,
             Bucket: process.env.LINODE_BUCKET,
@@ -62,13 +67,13 @@ export default async function handler(
         const url = await getSignedUrl(s3Client, command, { expiresIn: 86400 });
         const queueMsg = {
             id: fileId,
-            url
+            url,
+            userEmail: fileContent.userEmail
         }
         ch1.sendToQueue(queue, Buffer.from(JSON.stringify(queueMsg)));
-       
-            
-        const queryResult = await db.query('CALL init_file(?, ?)', [fileId, (new Date).toISOString()])
-        console.log(queryResult)
+
+        const transcriptCollection: Collection = (await dbProm).collection('transcript');
+        const { insertedId } = await transcriptCollection.insertOne({ fileId, userEmail: fileContent.userEmail });
         res.status(200).send({ message: fileId })
     } catch (err) {
         console.error(err)

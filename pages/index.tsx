@@ -1,5 +1,6 @@
 import NavBar from "@/components/NavBar";
 import UploadAudio from "@/components/UploadAudio";
+import { Toaster } from "react-hot-toast";
 
 export default function Home() {
   return (
@@ -16,6 +17,7 @@ export default function Home() {
               <h1 className="text-5xl font-bold">Say it, transcribe it, share it</h1>
               <p className="py-6 md:mb-6">Wavscriber simplifies audio transcription, so you can focus on <br /> what you do best.</p>
               <UploadAudio />
+              <Toaster />
             </div>
           </div>
         </div>
